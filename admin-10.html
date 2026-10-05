@@ -1,0 +1,261 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1">
+<title>MoneyCaptcha Admin</title>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+:root{--bg:#f4f6fa;--card:#fff;--ink:#101828;--muted:#667085;--line:#e4e7ec;--blue:#2563eb;--green:#059669;--red:#dc2626;--amber:#d97706;--dark:#111827}
+*{box-sizing:border-box}html,body{margin:0;overflow-x:hidden}body{background:var(--bg);color:var(--ink);font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,sans-serif}button,input,textarea,select{font:inherit}button{cursor:pointer}.wrap{max-width:1400px;margin:auto;padding:12px}.top{position:sticky;top:0;z-index:50;background:rgba(244,246,250,.97);backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}.bar{display:flex;align-items:center;justify-content:space-between;gap:12px;min-height:56px}.brand{font-size:20px;font-weight:950}.adminmail{font-size:12px;color:var(--muted);word-break:break-all}.nav{display:flex;gap:7px;overflow-x:auto;white-space:nowrap;padding:8px 0;scrollbar-width:none}.nav::-webkit-scrollbar{display:none}.nav button{flex:0 0 auto;border:1px solid var(--line);background:#fff;border-radius:11px;padding:10px 13px;font-weight:850}.nav button.active{background:var(--dark);color:#fff}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px}.card{background:var(--card);border:1px solid var(--line);border-radius:17px;padding:16px;margin-bottom:14px;box-shadow:0 7px 24px rgba(17,24,39,.05)}.stat{font-size:13px;color:var(--muted)}.stat b{display:block;color:var(--ink);font-size:28px;margin-top:5px}.btn{border:0;border-radius:11px;padding:10px 13px;font-weight:850;color:#fff;background:var(--blue)}.btn.green{background:var(--green)}.btn.red{background:var(--red)}.btn.amber{background:var(--amber)}.btn.dark{background:var(--dark)}.btn.alt{background:#eef2ff;color:#3730a3}.btn:disabled{opacity:.5}.row{display:flex;gap:8px;flex-wrap:wrap}.field{margin:9px 0}.field label{display:block;font-size:13px;font-weight:850;margin-bottom:5px}.field input,.field textarea,.field select{width:100%;padding:10px 11px;border:1px solid #d9dee8;border-radius:11px;background:#fff;color:var(--ink)}.hidden{display:none!important}.muted{color:var(--muted)}.small{font-size:12px}.notice{padding:10px 12px;border-radius:11px;background:#eef4ff;margin:8px 0}.notice.ok{background:#ecfdf5;color:#065f46}.notice.err{background:#fff1f2;color:#991b1b}.tableWrap{overflow:auto;border:1px solid var(--line);border-radius:13px}.table{width:100%;border-collapse:collapse;min-width:1250px}.table th,.table td{padding:10px;border-bottom:1px solid var(--line);text-align:left;vertical-align:top}.table th{font-size:12px;color:var(--muted);background:#fafbfc;white-space:nowrap}.table td{font-size:13px}.actions{display:flex;gap:6px;flex-wrap:wrap}.badge{display:inline-block;padding:4px 8px;border-radius:999px;background:#eef2ff;color:#3730a3;font-size:12px;font-weight:800}.badge.green{background:#ecfdf5;color:#065f46}.badge.red{background:#fff1f2;color:#991b1b}.badge.amber{background:#fffbeb;color:#92400e}.empty{text-align:center;padding:25px;color:var(--muted)}.login{max-width:430px;margin:13vh auto}.two{display:grid;grid-template-columns:minmax(300px,420px) 1fr;gap:14px}.userList{border:1px solid var(--line);border-radius:14px;overflow:hidden;max-height:650px;overflow-y:auto}.userRow{padding:13px;border-bottom:1px solid var(--line);cursor:pointer;background:#fff}.userRow:last-child{border-bottom:0}.userRow:hover,.userRow.selected{background:#f0f5ff}.userName{font-weight:900}.email{font-size:13px;color:#475467;margin-top:3px;word-break:break-all}.balance{font-weight:950;margin-top:6px}.chat{height:500px;overflow:auto;border:1px solid var(--line);border-radius:14px;padding:12px;background:#fafbfc}.bubble{max-width:84%;padding:10px 12px;border-radius:14px;margin:7px 0;word-break:break-word}.bubble.user{background:#eef4ff}.bubble.admin{background:#ecfdf5;margin-left:auto}.bubble .meta{font-size:11px;color:var(--muted);margin-top:5px}.count{font-size:11px;font-weight:900;padding:3px 7px;border-radius:999px;background:#111827;color:#fff}.modalBack{position:fixed;inset:0;background:rgba(0,0,0,.52);z-index:100;display:flex;align-items:center;justify-content:center;padding:18px}.modal{width:min(560px,100%);background:#fff;border-radius:18px;padding:18px;box-shadow:0 20px 70px rgba(0,0,0,.25)}.modal h2{margin-top:0}.modalActions{display:flex;justify-content:flex-end;gap:8px;margin-top:15px}.details{line-height:1.65}.details b{color:#344054}@media(max-width:760px){.wrap{padding:9px}.brand{font-size:17px}.two{grid-template-columns:1fr}.chat{height:420px}}
+</style>
+</head>
+<body>
+<div id="login" class="wrap login"><div class="card"><h1>MoneyCaptcha Admin</h1><p class="muted">Authorized admin access</p><div class="field"><label>Email</label><input id="loginEmail" type="email" value="chandumoneymakes@gmail.com"></div><div class="field"><label>Password</label><input id="loginPassword" type="password"></div><button id="loginBtn" class="btn dark" onclick="adminLogin()">Login</button><div id="loginMsg" class="notice hidden"></div></div></div>
+<div id="app" class="hidden"><header class="top"><div class="wrap"><div class="bar"><div><div class="brand">MoneyCaptcha • Admin</div><div id="adminEmail" class="adminmail"></div></div><button class="btn alt" onclick="logout()">Logout</button></div><nav class="nav"><button data-tab="overview">Overview</button><button data-tab="users">Users</button><button data-tab="money">Money</button><button data-tab="payments">Payments</button><button data-tab="withdrawals">Withdrawals</button><button data-tab="referrals">Referrals</button><button data-tab="support">Support Chat</button><button data-tab="notifications">Notifications</button><button data-tab="announcements">Announcements</button><button data-tab="packs">Packs</button></nav></div></header>
+<main class="wrap">
+<section id="overview"><div class="grid"><div class="card stat">Total Users<b id="statUsers">0</b></div><div class="card stat">Pending Payments<b id="statPayments">0</b></div><div class="card stat">Pending Withdrawals<b id="statWithdrawals">0</b></div><div class="card stat">Support Conversations<b id="statSupport">0</b></div><div class="card stat">Total Available Balance<b id="statBalance">₹0.00</b></div></div><div class="card"><h2>Admin Control Center</h2><p class="muted">Everything below is loaded from the connected MoneyCaptcha Supabase project. User email is resolved from the available user/profile records.</p><div id="globalMsg" class="notice ok">Ready.</div></div></section>
+<section id="users" class="hidden"><div class="card"><h2>All Users</h2><p class="muted">Every user is shown here with email, balance, earnings, withdrawals and account controls.</p><div id="usersTable"></div></div></section>
+<section id="money" class="hidden"><div class="card"><h2>Money Management</h2><p class="muted">Every user is listed. Select a user, confirm their email and balance, then add or remove money with a reason.</p></div><div class="two"><div class="card"><h3>All Users</h3><div id="moneyUsers" class="userList"></div></div><div class="card"><h3>Selected User</h3><div id="selectedEmpty" class="empty">Select a user.</div><div id="selectedInfo" class="hidden"><div class="notice"><b id="selectedName"></b><br><span id="selectedEmail"></span><br><strong>Available Balance: <span id="selectedBalance"></span></strong></div><div class="field"><label>Amount</label><input id="moneyAmount" type="number" min="0.01" step="0.01"></div><div class="field"><label>Reason</label><input id="moneyReason" placeholder="Reason for this adjustment"></div><div class="row"><button class="btn green" onclick="adjustMoney(1)">Add Money</button><button class="btn red" onclick="adjustMoney(-1)">Remove Money</button></div><div id="moneyMsg" class="notice hidden"></div></div></div></div></section>
+<section id="payments" class="hidden"><div class="card"><h2>Payments</h2><div id="paymentsTable"></div></div></section>
+<section id="withdrawals" class="hidden"><div class="card"><h2>Withdrawals</h2><p class="muted">Full withdrawal details are shown, including UPI or bank details and any phone/contact field present in the database.</p><div id="withdrawalsTable"></div></div></section>
+<section id="referrals" class="hidden"><div class="card"><h2>Referrals</h2><div id="referralsTable"></div></div></section>
+<section id="support" class="hidden"><div class="two"><div class="card"><h2>Support Users</h2><p class="muted">Only users who have a support conversation are listed. Email and message count are shown.</p><div id="supportList" class="userList"></div></div><div class="card"><h2 id="supportTitle">Select a user</h2><div id="supportUserMeta" class="small muted" style="margin-bottom:8px"></div><div id="adminChat" class="chat"><div class="empty">Select a user to open the full conversation.</div></div><div class="row" style="margin-top:10px"><input id="adminSupportInput" style="flex:1;min-width:180px;padding:11px;border:1px solid #d9dee8;border-radius:11px" placeholder="Type your reply"><button class="btn dark" onclick="adminReply()">Send Reply</button></div><div id="supportMsg" class="notice hidden"></div></div></div></section>
+<section id="notifications" class="hidden"><div class="card"><h2>Send Notification</h2><div class="field"><label>Recipient</label><select id="notifyTarget" onchange="updateNotifyTarget()"><option value="all">All Users</option><option value="user">Specific User</option></select></div><div id="notifyUserBox" class="field hidden"><label>Select User Email</label><select id="notifyUser"></select></div><div class="field"><label>Title</label><input id="notifyTitle"></div><div class="field"><label>Message</label><textarea id="notifyText" rows="4"></textarea></div><button class="btn dark" onclick="sendNotification()">Send Notification</button><div id="notifyMsg" class="notice hidden"></div></div><div class="card"><h2>Notification History</h2><div id="notificationList"></div></div></section>
+<section id="announcements" class="hidden"><div class="card"><h2>Announcements</h2><p class="muted">Create or review announcements used by the MoneyCaptcha dashboard.</p><div class="field"><label>Announcement Text</label><textarea id="annText" rows="3"></textarea></div><div class="row"><button class="btn dark" onclick="createAnnouncement()">Create Announcement</button></div><div id="annMsg" class="notice hidden"></div></div><div class="card"><h2>Announcement History</h2><div id="announcementList"></div></div></section>
+<section id="packs" class="hidden"><div class="card"><h2>Packs</h2><div id="packsTable"></div></div></section>
+</main></div>
+<div id="paymentModal" class="modalBack hidden"><div class="modal"><h2 id="paymentModalTitle"></h2><div id="paymentModalInfo" class="notice"></div><div class="field"><label>Reason / Admin Note</label><textarea id="paymentReason" rows="4"></textarea></div><div class="modalActions"><button class="btn alt" onclick="closePaymentModal()">No</button><button id="paymentYesBtn" class="btn green" onclick="confirmPaymentAction()">Yes</button></div></div></div>
+<div id="withdrawModal" class="modalBack hidden"><div class="modal"><h2 id="withdrawModalTitle"></h2><div id="withdrawModalInfo" class="notice"></div><div class="field"><label>Reason / Admin Note</label><textarea id="withdrawReason" rows="4"></textarea></div><div class="modalActions"><button class="btn alt" onclick="closeWithdrawModal()">No</button><button id="withdrawYesBtn" class="btn green" onclick="confirmWithdrawAction()">Yes</button></div></div></div>
+<div id="blockModal" class="modalBack hidden"><div class="modal"><h2 id="blockModalTitle">Block User?</h2><div id="blockModalInfo" class="notice"></div><div class="field"><label>Reason / Admin Note</label><textarea id="blockReason" rows="3" placeholder="Reason is required"></textarea></div><div class="modalActions"><button class="btn alt" onclick="closeBlockModal()">No</button><button id="blockYesBtn" class="btn red" onclick="confirmBlockAction()">Yes, Block</button></div></div></div>
+<script>
+const SUPABASE_URL='https://msxiihrrxdahelmyujnn.supabase.co';
+const SUPABASE_KEY='sb_publishable_R1fwduW7V04I3e_tzlcs4Q_6jj-V9tI';
+const ADMIN_EMAIL='chandumoneymakes@gmail.com';
+const sb=window.supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
+const $=id=>document.getElementById(id);
+const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const money=v=>'₹'+Number(v||0).toFixed(2);
+const dt=v=>v?new Date(v).toLocaleString():'—';
+let admin=null,users=[],supports=[],selectedUser=null,selectedConversation=null,paymentActionState=null,withdrawActionState=null,blockActionState=null,paymentRows=[];
+function showMsg(id,t,err=false){const e=$(id);if(!e)return;e.textContent=t;e.className='notice '+(err?'err':'ok');e.classList.remove('hidden')}
+function emailOf(u){return u?.email||u?.user_email||u?.login_email||u?.auth_email||'Email not available'}
+function nameOf(u){return u?.name||u?.full_name||u?.display_name||emailOf(u)||'User'}
+function balanceOf(u){return Number(u?.available_balance??u?.wallet_available_balance??0)}
+function badge(s){s=String(s||'pending');let l=s.toLowerCase(),c=['approved','active','open','completed','unlocked'].includes(l)?'green':['rejected','blocked','locked','failed'].includes(l)?'red':'amber';return '<span class="badge '+c+'">'+esc(s)+'</span>'}
+function resultData(r){return Array.isArray(r?.data)?(r.data[0]??null):(r?.data??null)}
+async function rpc(name,params){return await sb.rpc(name,params)}
+
+async function adminLogin(){
+  const email=$('loginEmail').value.trim().toLowerCase(),password=$('loginPassword').value;
+  if(email!==ADMIN_EMAIL)return showMsg('loginMsg','Only the authorized admin email can access this panel.',true);
+  $('loginBtn').disabled=true;
+  const r=await sb.auth.signInWithPassword({email,password});
+  $('loginBtn').disabled=false;
+  if(r.error)return showMsg('loginMsg',r.error.message,true);
+  await startAdmin(r.data.user);
+}
+async function startAdmin(user){
+  admin=user;
+  if((user?.email||'').toLowerCase()!==ADMIN_EMAIL){await sb.auth.signOut();return showMsg('loginMsg','This account is not authorized.',true)}
+  const r=await rpc('admin_is_current_user',{});
+  if(r.error||r.data!==true){await sb.auth.signOut();return showMsg('loginMsg',r.error?.message||'Admin authorization is not active.',true)}
+  $('login').classList.add('hidden');$('app').classList.remove('hidden');$('adminEmail').textContent=user.email||'';
+  await loadAll();
+}
+async function logout(){await sb.auth.signOut();admin=null;$('app').classList.add('hidden');$('login').classList.remove('hidden');$('loginPassword').value=''}
+
+async function openTab(tab){
+  document.querySelectorAll('main section').forEach(s=>s.classList.add('hidden'));
+  $(tab).classList.remove('hidden');
+  document.querySelectorAll('.nav button').forEach(b=>b.classList.toggle('active',b.dataset.tab===tab));
+  if(tab==='users'||tab==='money')await loadUsers();
+  if(tab==='payments')await loadPayments();
+  if(tab==='withdrawals')await loadWithdrawals();
+  if(tab==='referrals')await loadReferrals();
+  if(tab==='support')await loadSupport();
+  if(tab==='notifications'){await loadUsers();fillNotifyUsers();await loadNotifications()}
+  if(tab==='announcements')await loadAnnouncements();
+  if(tab==='packs')await loadPacks();
+  if(tab==='overview')await refreshStats();
+}
+async function loadAll(){
+  await loadUsers();await refreshStats();await loadPayments();await loadWithdrawals();await loadReferrals();await loadSupport();fillNotifyUsers();await loadNotifications();await loadAnnouncements();await loadPacks();
+}
+
+async function loadUsers(){
+  const r=await rpc('admin_list_users',{});
+  if(r.error){users=[];$('usersTable').innerHTML='<div class="notice err">'+esc(r.error.message)+'</div>';$('moneyUsers').innerHTML='<div class="notice err">'+esc(r.error.message)+'</div>';return}
+  users=Array.isArray(r.data)?r.data:[];
+  $('statUsers').textContent=users.length;
+  $('statBalance').textContent=money(users.reduce((a,x)=>a+balanceOf(x),0));
+  renderUsers();renderMoneyUsers();fillNotifyUsers();
+}
+function renderUsers(){
+  if(!users.length){$('usersTable').innerHTML='<div class="empty">No users found.</div>';return}
+  $('usersTable').innerHTML='<div class="tableWrap"><table class="table"><thead><tr><th>Name</th><th>Email</th><th>Available</th><th>Total Earned</th><th>Withdrawn</th><th>Status</th><th>Withdrawal</th><th>Created</th><th>Actions</th></tr></thead><tbody>'+users.map(u=>
+    '<tr><td>'+esc(nameOf(u))+'</td><td><b>'+esc(emailOf(u))+'</b></td><td>'+money(u.available_balance)+'</td><td>'+money(u.total_earned)+'</td><td>'+money(u.withdrawn_amount)+'</td><td>'+badge(u.permanently_blocked?'blocked':(u.status||'active'))+'</td><td>'+badge(u.withdrawal_locked?'locked':'unlocked')+'</td><td>'+dt(u.created_at)+'</td><td><div class="actions"><button class="btn green" onclick="selectUser(\''+u.id+'\');openTab(\'money\')">Money</button><button class="btn alt" onclick="toggleWithdrawal(\''+u.id+'\','+(!u.withdrawal_locked)+')">'+(u.withdrawal_locked?'Unlock':'Lock')+'</button><button class="btn '+(u.permanently_blocked?'green':'red')+'" onclick="toggleBlock(\''+u.id+'\','+(!u.permanently_blocked)+')">'+(u.permanently_blocked?'Resume':'Block')+'</button></div></td></tr>'
+  ).join('')+'</tbody></table></div>';
+}
+function renderMoneyUsers(){
+  if(!users.length){$('moneyUsers').innerHTML='<div class="empty">No users found.</div>';return}
+  $('moneyUsers').innerHTML=users.map(u=>'<div class="userRow '+(selectedUser?.id===u.id?'selected':'')+'" onclick="selectUser(\''+u.id+'\')"><div class="userName">'+esc(nameOf(u))+'</div><div class="email">'+esc(emailOf(u))+'</div><div class="balance">'+money(balanceOf(u))+'</div></div>').join('');
+}
+function selectUser(id){selectedUser=users.find(u=>u.id===id)||null;if(!selectedUser){$('selectedEmpty').classList.remove('hidden');$('selectedInfo').classList.add('hidden');return}$('selectedEmpty').classList.add('hidden');$('selectedInfo').classList.remove('hidden');$('selectedName').textContent=nameOf(selectedUser);$('selectedEmail').textContent=emailOf(selectedUser);$('selectedBalance').textContent=money(balanceOf(selectedUser));renderMoneyUsers()}
+async function adjustMoney(dir){
+  if(!selectedUser)return showMsg('moneyMsg','Select a user first.',true);
+  const amount=Number($('moneyAmount').value),reason=$('moneyReason').value.trim();
+  if(!(amount>0))return showMsg('moneyMsg','Enter a valid amount.',true);
+  if(!reason)return showMsg('moneyMsg','Reason is required.',true);
+  const r=await rpc(dir>0?'admin_add_money':'admin_remove_money',{p_user_id:selectedUser.id,p_amount:amount,p_reason:reason});
+  if(r.error)return showMsg('moneyMsg',r.error.message,true);
+  $('moneyAmount').value='';$('moneyReason').value='';showMsg('moneyMsg',(dir>0?'Added ':'Removed ')+money(amount)+' for '+emailOf(selectedUser));
+  await loadUsers();selectUser(selectedUser.id);
+}
+async function toggleWithdrawal(id,lock){const r=await rpc(lock?'admin_lock_user_withdrawal':'admin_unlock_user_withdrawal',{p_user_id:id,p_reason:lock?'Admin locked withdrawal':'Admin unlocked withdrawal'});if(r.error)return alert(r.error.message);await loadUsers()}
+function toggleBlock(id,block){
+ blockActionState={id,block};
+ const u=users.find(x=>x.id===id)||{};
+ $('blockModalTitle').textContent=block?'Block User?':'Unblock User?';
+ $('blockModalInfo').innerHTML='<b>User:</b> '+esc(emailOf(u))+'<br><br>'+(block?'This will block the account and stop access.':'This will restore the account access.');
+ $('blockReason').value='';$('blockYesBtn').textContent=block?'Yes, Block':'Yes, Unblock';$('blockYesBtn').className='btn '+(block?'red':'green');
+ $('blockModal').classList.remove('hidden');
+}
+function closeBlockModal(){$('blockModal').classList.add('hidden');blockActionState=null}
+async function confirmBlockAction(){
+ const st=blockActionState;if(!st)return;
+ const reason=$('blockReason').value.trim();if(!reason)return showMsg('globalMsg','Reason is required.',true);
+ $('blockYesBtn').disabled=true;
+ const r=await rpc('admin_block_user',{p_user_id:st.id,p_block:st.block,p_reason:reason});
+ $('blockYesBtn').disabled=false;
+ if(r.error)return showMsg('globalMsg',r.error.message,true);
+ closeBlockModal();showMsg('globalMsg',st.block?'User blocked successfully.':'User unblocked successfully.');await loadUsers();
+}
+async function refreshStats(){
+  const p=await rpc('admin_list_payments',{}),w=await rpc('admin_list_withdrawals',{});
+  const pr=Array.isArray(p.data)?p.data:[],wr=Array.isArray(w.data)?w.data:[];
+  $('statPayments').textContent=pr.filter(x=>x.status==='pending').length;
+  $('statWithdrawals').textContent=wr.filter(x=>x.status==='pending').length;
+  $('statUsers').textContent=users.length;
+  $('statBalance').textContent=money(users.reduce((a,x)=>a+balanceOf(x),0));
+  $('statSupport').textContent=supports.length;
+}
+
+async function loadPayments(){
+  const r=await rpc('admin_list_payments',{});
+  if(r.error){$('paymentsTable').innerHTML='<div class="notice err">'+esc(r.error.message)+'</div>';return}
+  let rows=Array.isArray(r.data)?r.data:[];
+  // Merge the new payer fields directly from payments so older admin RPCs also show them.
+  try{
+    const ids=rows.map(x=>x.id).filter(Boolean);
+    if(ids.length){
+      const pr=await sb.from('payments').select('id,payer_name,payer_phone,payer_bank_name').in('id',ids);
+      const pm=new Map((pr.data||[]).map(x=>[x.id,x]));
+      rows=rows.map(x=>({...x,...(pm.get(x.id)||{})}));
+    }
+  }catch(e){}
+  paymentRows=rows;$('statPayments').textContent=rows.filter(x=>x.status==='pending').length;
+  $('paymentsTable').innerHTML=rows.length?'<div class="tableWrap"><table class="table"><thead><tr><th>User</th><th>Email</th><th>Pack</th><th>Amount</th><th>UTR</th><th>Payer Name</th><th>Payment Phone</th><th>Payment Bank</th><th>Status</th><th>Admin Note</th><th>Date</th><th>Action</th></tr></thead><tbody>'+rows.map(x=>
+    '<tr><td>'+esc(x.user_name||x.email||'User')+'</td><td><b>'+esc(x.email||'Email not available')+'</b></td><td>'+esc(x.pack_name||x.pack_id||'—')+'</td><td>'+money(x.amount)+'</td><td><b>'+esc(x.utr_number||'—')+'</b></td><td><b>'+esc(x.payer_name||'—')+'</b></td><td><b>'+esc(x.payer_phone||'—')+'</b></td><td><b>'+esc(x.payer_bank_name||'—')+'</b></td><td>'+badge(x.status)+'</td><td>'+esc(x.admin_note||'—')+'</td><td>'+dt(x.created_at)+'</td><td>'+(x.status==='pending'?'<div class="actions"><button class="btn green" onclick="openPaymentReview(\''+x.id+'\',\''+x.user_id+'\',true)">Approve</button><button class="btn red" onclick="openPaymentReview(\''+x.id+'\',\''+x.user_id+'\',false)">Reject</button></div>':'—')+'</td></tr>'
+  ).join('')+'</tbody></table></div>':'<div class="empty">No payments found.</div>';
+}
+function openPaymentReview(id,userId,approve){const row=paymentRows.find(x=>x.id===id)||{};paymentActionState={id,userId,approve};const u=users.find(x=>x.id===userId);$('paymentModalTitle').textContent=approve?'Approve Payment?':'Reject Payment?';$('paymentModalInfo').innerHTML='<b>User:</b> '+esc(emailOf(u)||row.email||'—')+'<br><b>Pack:</b> '+esc(row.pack_name||'—')+'<br><b>Amount:</b> '+money(row.amount)+'<br><b>UTR:</b> '+esc(row.utr_number||'—')+'<br><b>Payer Name:</b> '+esc(row.payer_name||'—')+'<br><b>Payment Phone:</b> '+esc(row.payer_phone||'—')+'<br><b>Payment Bank:</b> '+esc(row.payer_bank_name||'—')+'<br><b>Action:</b> '+(approve?'Approve payment and activate the pack.':'Reject the payment and keep the pack inactive.');$('paymentReason').value='';$('paymentYesBtn').className='btn '+(approve?'green':'red');$('paymentYesBtn').textContent=approve?'Yes, Approve':'Yes, Reject';$('paymentModal').classList.remove('hidden')}
+function closePaymentModal(){$('paymentModal').classList.add('hidden');paymentActionState=null}
+async function confirmPaymentAction(){
+  const st=paymentActionState;if(!st)return;const note=$('paymentReason').value.trim();if(!note)return alert('Admin note/reason is required.');
+  $('paymentYesBtn').disabled=true;
+  const r=await rpc(st.approve?'admin_approve_payment':'admin_reject_payment',{p_payment_id:st.id,p_admin_note:note});
+  $('paymentYesBtn').disabled=false;
+  if(r.error)return alert(r.error.message);
+  closePaymentModal();await loadUsers();await loadPayments();await refreshStats();
+}
+
+function withdrawalDetails(x){
+  let d=x.details||{};let out=[];
+  const keys=[['phone_number','Phone'],['phone','Phone'],['mobile_number','Mobile'],['mobile','Mobile'],['upi_id','UPI ID'],['account_holder','Account Holder'],['account_number','Account Number'],['ifsc','IFSC'],['bank_name','Bank Name']];
+  for(const [k,label] of keys){if(d[k]!==undefined&&d[k]!==null&&String(d[k]).trim()!=='')out.push('<b>'+label+':</b> '+esc(d[k]))}
+  if(!out.length){for(const [k,v] of Object.entries(d)){if(['id','user_id','amount','status','created_at','updated_at','admin_note','method'].includes(k))continue;if(v!==null&&v!==undefined&&String(v).trim()!=='')out.push('<b>'+esc(k.replaceAll('_',' '))+':</b> '+esc(v))}}
+  return out.join('<br>')||'—';
+}
+async function loadWithdrawals(){
+  const r=await rpc('admin_list_withdrawals',{});
+  if(r.error){$('withdrawalsTable').innerHTML='<div class="notice err">'+esc(r.error.message)+'</div>';return}
+  const rows=Array.isArray(r.data)?r.data:[];$('statWithdrawals').textContent=rows.filter(x=>x.status==='pending').length;
+  $('withdrawalsTable').innerHTML=rows.length?'<div class="tableWrap"><table class="table"><thead><tr><th>User</th><th>Email</th><th>Amount</th><th>Method</th><th>Full Payment Details</th><th>Status</th><th>Admin Note</th><th>Date</th><th>Action</th></tr></thead><tbody>'+rows.map(x=>
+    '<tr><td>'+esc(x.user_name||x.email||'User')+'</td><td><b>'+esc(x.email||'Email not available')+'</b></td><td>'+money(x.amount)+'</td><td>'+esc(x.method||'—')+'</td><td class="details">'+withdrawalDetails(x)+'</td><td>'+badge(x.status)+'</td><td>'+esc(x.admin_note||'—')+'</td><td>'+dt(x.created_at)+'</td><td>'+(x.status==='pending'?'<div class="actions"><button class="btn green" onclick="openWithdrawReview(\''+x.id+'\',true)">Approve</button><button class="btn red" onclick="openWithdrawReview(\''+x.id+'\',false)">Reject</button></div>':'—')+'</td></tr>'
+  ).join('')+'</tbody></table></div>':'<div class="empty">No withdrawals found.</div>';
+}
+function openWithdrawReview(id,approve){withdrawActionState={id,approve};$('withdrawModalTitle').textContent=approve?'Approve Withdrawal?':'Reject Withdrawal?';$('withdrawModalInfo').textContent=approve?'The amount was reserved when the user submitted the withdrawal. Approval will not deduct it again.':'The reserved amount will be returned to the user Available Balance.';$('withdrawReason').value='';$('withdrawYesBtn').className='btn '+(approve?'green':'red');$('withdrawYesBtn').textContent=approve?'Yes, Approve':'Yes, Reject';$('withdrawModal').classList.remove('hidden')}
+function closeWithdrawModal(){$('withdrawModal').classList.add('hidden');withdrawActionState=null}
+async function confirmWithdrawAction(){
+  const st=withdrawActionState;if(!st)return;const note=$('withdrawReason').value.trim();if(!note)return alert('Admin note/reason is required.');
+  $('withdrawYesBtn').disabled=true;
+  const r=await rpc(st.approve?'admin_approve_withdrawal':'admin_reject_withdrawal',{p_withdrawal_id:st.id,p_admin_note:note});
+  $('withdrawYesBtn').disabled=false;
+  if(r.error)return alert(r.error.message);
+  closeWithdrawModal();await loadWithdrawals();await loadUsers();await refreshStats();
+}
+
+async function loadReferrals(){
+  const r=await rpc('admin_list_referrals',{});
+  if(r.error){$('referralsTable').innerHTML='<div class="notice err">'+esc(r.error.message)+'</div>';return}
+  const rows=Array.isArray(r.data)?r.data:[];
+  $('referralsTable').innerHTML=rows.length?'<div class="tableWrap"><table class="table"><thead><tr><th>Referrer</th><th>Referrer Email</th><th>Referred User</th><th>Referred Email</th><th>Status</th><th>Reward</th><th>Created</th></tr></thead><tbody>'+rows.map(x=>'<tr><td>'+esc(x.referrer_name||'User')+'</td><td><b>'+esc(x.referrer_email||'Email not available')+'</b></td><td>'+esc(x.referred_name||'User')+'</td><td><b>'+esc(x.referred_email||'Email not available')+'</b></td><td>'+badge(x.status||'pending')+'</td><td>'+money(x.reward_amount||0)+'</td><td>'+dt(x.created_at)+'</td></tr>').join('')+'</tbody></table></div>':'<div class="empty">No referrals found.</div>';
+}
+
+async function loadSupport(){
+  const r=await rpc('admin_list_support',{});
+  if(r.error){$('supportList').innerHTML='<div class="notice err">'+esc(r.error.message)+'</div>';supports=[];return}
+  supports=Array.isArray(r.data)?r.data.map(x=>({...x,id:x.conversation_id,user:{id:x.user_id,email:x.email,name:x.user_name},messageCount:Number(x.message_count||0)})):[];
+  $('statSupport').textContent=supports.length;renderSupportList();
+}
+function renderSupportList(){
+  if(!supports.length){$('supportList').innerHTML='<div class="empty">No support conversations found.</div>';return}
+  $('supportList').innerHTML=supports.map(s=>'<div class="userRow '+(selectedConversation?.id===s.id?'selected':'')+'" onclick="selectConversation(\''+s.id+'\')"><div class="row" style="justify-content:space-between"><div class="userName">'+esc(nameOf(s.user))+'</div><span class="count">'+s.messageCount+' message'+(s.messageCount===1?'':'s')+'</span></div><div class="email">'+esc(emailOf(s.user))+'</div><div class="small muted" style="margin-top:5px">Last activity: '+dt(s.updated_at||s.created_at)+'</div></div>').join('');
+}
+async function selectConversation(id){
+  selectedConversation=supports.find(s=>s.id===id)||null;renderSupportList();if(!selectedConversation)return;
+  $('supportTitle').textContent=nameOf(selectedConversation.user);$('supportUserMeta').textContent=emailOf(selectedConversation.user)+' • '+selectedConversation.messageCount+' messages';
+  const r=await rpc('get_support_messages',{p_conversation_id:id});
+  if(r.error){$('adminChat').innerHTML='<div class="notice err">'+esc(r.error.message)+'</div>';return}
+  const rows=Array.isArray(r.data)?r.data:(r.data?[r.data]:[]);
+  $('adminChat').innerHTML=rows.length?rows.map(x=>'<div class="bubble '+(x.sender_type==='admin'?'admin':'user')+'"><b>'+esc(x.sender_type==='admin'?'Admin':'User')+'</b><div style="margin-top:3px">'+esc(x.message)+'</div><div class="meta">'+dt(x.created_at)+'</div></div>').join(''):'<div class="empty">No messages yet.</div>';
+  $('adminChat').scrollTop=$('adminChat').scrollHeight;
+}
+async function adminReply(){
+  if(!selectedConversation)return showMsg('supportMsg','Select a user first.',true);
+  const t=$('adminSupportInput').value.trim();if(!t)return;
+  const r=await rpc('admin_send_support_message',{p_conversation_id:selectedConversation.id,p_message:t});
+  if(r.error)return showMsg('supportMsg',r.error.message,true);
+  $('adminSupportInput').value='';showMsg('supportMsg','Reply sent.');await loadSupport();await selectConversation(selectedConversation.id);
+}
+
+function fillNotifyUsers(){const e=$('notifyUser');if(!e)return;e.innerHTML='<option value="">Select user email</option>'+users.slice().sort((a,b)=>emailOf(a).localeCompare(emailOf(b))).map(u=>'<option value="'+esc(emailOf(u))+'">'+esc(emailOf(u))+' — '+esc(nameOf(u))+'</option>').join('')}
+function updateNotifyTarget(){$('notifyUserBox').classList.toggle('hidden',$('notifyTarget').value!=='user')}
+async function sendNotification(){
+  const target=$('notifyTarget').value,email=$('notifyUser').value,title=$('notifyTitle').value.trim(),text=$('notifyText').value.trim();
+  if(!title||!text)return showMsg('notifyMsg','Enter title and message.',true);if(target==='user'&&!email)return showMsg('notifyMsg','Select a user email.',true);
+  const r=await rpc('admin_create_notification',{p_title:title,p_message:text,p_target_type:target==='user'?'email':'all',p_recipient_email:target==='user'?email:null});
+  if(r.error)return showMsg('notifyMsg',r.error.message,true);
+  showMsg('notifyMsg',target==='all'?'Notification sent to all users.':'Notification sent to '+email+'.');$('notifyTitle').value='';$('notifyText').value='';await loadNotifications();
+}
+async function loadNotifications(){
+  const r=await rpc('admin_list_notifications',{});if(r.error){$('notificationList').innerHTML='<div class="notice err">'+esc(r.error.message)+'</div>';return}
+  const rows=Array.isArray(r.data)?r.data:[];
+  $('notificationList').innerHTML=rows.length?rows.map(x=>'<div class="card"><b>'+esc(x.title||'Notification')+'</b><div style="margin-top:5px">'+esc(x.message||'')+'</div><div class="small muted" style="margin-top:6px">Recipient: '+esc(x.recipient_email||'All Users')+'<br>Date: '+dt(x.created_at)+'</div></div>').join(''):'<div class="empty">No notifications yet.</div>';
+}
+async function createAnnouncement(){
+  const text=$('annText').value.trim();if(!text)return showMsg('annMsg','Enter announcement text.',true);
+  const r=await rpc('admin_create_announcement',{p_message:text});if(r.error)return showMsg('annMsg',r.error.message,true);
+  $('annText').value='';showMsg('annMsg','Announcement created.');await loadAnnouncements();
+}
+async function loadAnnouncements(){
+  const r=await rpc('admin_list_announcements',{});if(r.error){$('announcementList').innerHTML='<div class="notice err">'+esc(r.error.message)+'</div>';return}
+  const rows=Array.isArray(r.data)?r.data:[];
+  $('announcementList').innerHTML=rows.length?rows.map(x=>'<div class="card"><b>Announcement</b><div style="margin-top:5px">'+esc(x.message||'')+'</div><div class="small muted" style="margin-top:6px">'+dt(x.created_at)+' • '+(x.is_active?'Active':'Inactive')+'</div></div>').join(''):'<div class="empty">No announcements found.</div>';
+}
+async function loadPacks(){const r=await sb.from('packs').select('*').order('display_order');if(r.error){$('packsTable').innerHTML='<div class="notice err">'+esc(r.error.message)+'</div>';return}const rows=r.data||[];$('packsTable').innerHTML=rows.length?'<div class="tableWrap"><table class="table"><thead><tr><th>Pack</th><th>Price</th><th>Daily CAPTCHA</th><th>One-time Bonus</th><th>Status</th></tr></thead><tbody>'+rows.map(x=>'<tr><td>'+esc(x.name)+'</td><td>'+money(x.price)+'</td><td>'+esc(x.daily_captcha_limit)+'</td><td>'+money(x.one_time_bonus||0)+'</td><td>'+badge(x.is_active?'active':'inactive')+'</td></tr>').join('')+'</tbody></table></div>':'<div class="empty">No packs found.</div>'}
+
+document.querySelectorAll('.nav button').forEach(b=>b.addEventListener('click',()=>openTab(b.dataset.tab)));
+$('adminSupportInput').addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();adminReply()}});
+sb.auth.getSession().then(r=>{if(r.data.session?.user)startAdmin(r.data.session.user)});
+</script></body></html>
